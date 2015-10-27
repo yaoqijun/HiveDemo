@@ -28,6 +28,19 @@
             <artifactId>poi-excelant</artifactId>
             <version>3.10-FINAL</version>
         </dependency>
+
+        <!--  spring data  -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-hadoop</artifactId>
+            <version>2.2.0.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-jdbc</artifactId>
+            <version>1.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
