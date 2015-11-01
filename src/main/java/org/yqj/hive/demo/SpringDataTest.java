@@ -14,5 +14,6 @@ public class SpringDataTest {
         System.out.println("test all");
         AbstractApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
         //回去对应文件的内容
+
     }
 }

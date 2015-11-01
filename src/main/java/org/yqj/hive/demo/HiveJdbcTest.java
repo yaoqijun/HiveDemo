@@ -2,7 +2,6 @@ package org.yqj.hive.demo;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.Statement;
 
 /**
@@ -25,20 +24,13 @@ public class HiveJdbcTest {
             System.exit(1);
         }
         try{
-            Connection connection = DriverManager.getConnection("jdbc:hive2://localhost:10000/default","yaoqijun","123456");
-            String sql = "select * from user_test";
-//            sql ="load data LOCAL inpath '/Users/yaoqijun/Downloads/cache/part-m-00000' into table user_test";
+            String sql = "";
+            Connection connection = DriverManager.getConnection("jdbc:hive2://localhost:10000/default", "yaoqijun", "123456");
+            sql ="load data inpath '/user/yaoqijun/part-m-00000' into table test_create";
             Statement statement = connection.createStatement();
-//            System.out.println(statement.execute(sql));
-
-            ResultSet resultSet = statement.executeQuery(sql);
-            int count = 0;
-            while (resultSet.next()){
-                //System.out.println(resultSet.getString(1)+"--"+resultSet.getString(2)+"--"+resultSet.getString(3));
-                count++;
-            }
-            System.out.println(count/6);
-
+            System.out.println(statement.execute(sql));
+            statement.close();
+            connection.close();
         }catch (Exception e){
             e.printStackTrace();
             System.out.println("load hive data exception");
