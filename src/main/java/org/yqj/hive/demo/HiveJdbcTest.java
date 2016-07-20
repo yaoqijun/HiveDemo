@@ -1,8 +1,8 @@
 package org.yqj.hive.demo;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
+import org.apache.hive.jdbc.HiveStatement;
+
+import java.sql.*;
 
 /**
  * Created by yaoqijun.
@@ -13,6 +13,8 @@ import java.sql.Statement;
 public class HiveJdbcTest {
 
     private static final String DRIVERNAME = "org.apache.hive.jdbc.HiveDriver";
+
+    static Statement stmt = null;
 
     public static void main(String []args){
         System.out.println("hive jdbc test content");
@@ -27,15 +29,67 @@ public class HiveJdbcTest {
             String sql = "";
             Connection connection = DriverManager.getConnection("jdbc:hive2://localhost:10000/default?useUnicode=true&characterEncoding=UTF-8", "yaoqijun", "yao4094230");
             //sql ="load data inpath '/user/yaoqijun/part-m-00000' into table test_create";
-            sql = "insert into TABLE parana_addresses values(1,1,'哈哈Hive 这个傻掉',2,1)";
             sql = new String(sql.getBytes("UTF-8"), "ISO-8859-1");
-            Statement statement = connection.createStatement();
-            System.out.println(statement.execute(sql));
-            statement.close();
+            stmt = connection.createStatement();
+            sql = "insert into test values ('hehe', 10)";
+
+            new GetLogThread().start();
+
+            for(int i=0; i<10; i++) {
+                stmt.execute(sql);
+                System.out.println("****************** finish execute once log info");
+//                outputResultSet(resultSet);
+                Thread.currentThread().sleep(1000l);
+            }
+//            System.out.println(statement.execute(sql));
+            stmt.close();
             connection.close();
         }catch (Exception e){
             e.printStackTrace();
             System.out.println("load hive data exception");
+        }
+    }
+
+    public static void outputResultSet(ResultSet resultSet) throws Exception {
+//        System.out.println("********************* result set info is");
+//
+//        while (resultSet.next()){
+//            System.out.print(resultSet.getString(1) + "   ");
+//            System.out.println(resultSet.getString(2));
+//        }
+//
+//        System.out.println("********************* result set info is over");
+    }
+
+    static class GetLogThread extends Thread {
+
+        public void run() { //真生的输出运行进度的thread
+            if (stmt == null) {
+                return;
+            }
+            HiveStatement hiveStatement = (HiveStatement) stmt;
+            try {
+                while (! hiveStatement.isClosed()){
+                    try {
+                        System.out.println("*** to fetch log info");
+                        for (String s : hiveStatement.getQueryLog()) {
+                            System.out.println(s);
+                        }
+                        System.out.println("*** over fetch log info");
+                        Thread.currentThread().sleep(1000L);
+                    } catch (SQLException e) { //防止while里面报错，导致一直退不出循环
+                        e.printStackTrace();
+                        return;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                }
+                System.out.println("** over");
+            } catch (SQLException e) {
+                System.out.println("test condition");
+                e.printStackTrace();
+            }
         }
     }
 }
