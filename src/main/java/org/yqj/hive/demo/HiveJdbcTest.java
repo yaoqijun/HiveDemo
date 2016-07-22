@@ -32,15 +32,22 @@ public class HiveJdbcTest {
             sql = new String(sql.getBytes("UTF-8"), "ISO-8859-1");
             stmt = connection.createStatement();
             sql = "insert into test values ('hehe', 10)";
+            sql = "select * from test";
 
-            new GetLogThread().start();
+//            new GetLogThread().start();
 
-            for(int i=0; i<10; i++) {
-                stmt.execute(sql);
-                System.out.println("****************** finish execute once log info");
+//            for(int i=0; i<10; i++) {
+            ResultSet resultSet = stmt.executeQuery(sql);
+            outputResultSet(resultSet);
+//                System.out.println("****************** finish execute once log info");
+//                System.out.println("****************** start log info output");
+//                ((HiveStatement) stmt).getQueryLog().forEach(s->{
+//                    System.out.println(s);
+//                });
+//                System.out.println("************** finish log info output content");
 //                outputResultSet(resultSet);
                 Thread.currentThread().sleep(1000l);
-            }
+//            }
 //            System.out.println(statement.execute(sql));
             stmt.close();
             connection.close();
@@ -51,14 +58,21 @@ public class HiveJdbcTest {
     }
 
     public static void outputResultSet(ResultSet resultSet) throws Exception {
-//        System.out.println("********************* result set info is");
-//
-//        while (resultSet.next()){
-//            System.out.print(resultSet.getString(1) + "   ");
-//            System.out.println(resultSet.getString(2));
-//        }
-//
-//        System.out.println("********************* result set info is over");
+        System.out.println("********************* result set info is");
+
+        ResultSetMetaData data = resultSet.getMetaData();
+
+        while (resultSet.next()){
+            System.out.print(resultSet.getString(1) + "   ");
+            System.out.println(resultSet.getString(2));
+        }
+
+        Integer count = data.getColumnCount();
+        for(int i=1; i<=count; i++){
+            System.out.println(data.getColumnName(i));
+        }
+
+        System.out.println("********************* result set info is over");
     }
 
     static class GetLogThread extends Thread {
